@@ -183,6 +183,13 @@ new password: Admin@123
 
 
 
+*Check logs:
+tail -f /opt/sonarqube/logs/sonar.log
+
+
+
+
+
 
 
 1️⃣8️⃣ Sonar Scanner Installation on your EC2-Instance
@@ -192,32 +199,20 @@ sudo wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-
 sudo unzip sonar-scanner-cli-5.0.1.3006-linux.zip
 sudo mv sonar-scanner-5.0.1.3006-linux sonar-scanner
 
-echo 'export PATH=$PATH:/opt/sonar-scanner/bin' | sudo tee /etc/profile.d/sonar-scanner.sh
-source /etc/profile.d/sonar-scanner.sh
-
-
-sonar-scanner -h
-sonar-scanner -v
-
-
-
-1️⃣8️⃣ sonar scanner installation & configuration | manual
-
-sudo wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
-sudo unzip sonar-scanner-cli-5.0.1.3006-linux.zip
-sudo mv sonar-scanner-5.0.1.3006-linux sonar-scanner
-
 sudo nano /opt/sonar-scanner/conf/sonar-scanner.properties
 
-update below:
+1. update below:
 sonar.host.url=http://localhost:9000
 sonar.sourceEncoding=UTF-8
 
-if EC2-instance/remote
+save&exit.
+
+1. if EC2-instance/remote
 
 update below:
 sonar.host.url=http://<your-server-ip>:9000
 
+save&exit.
 
 1️⃣9️⃣ Set Environment Variables
 
@@ -241,4 +236,4 @@ source /etc/profile.d/sonar-scanner.sh
 
 2️⃣2️⃣verify installation
 
-sonar-scanner -h
+sonar-scanner -v
