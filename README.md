@@ -10,3 +10,4 @@ cd Downloads
 chmod 400 sonar.pem
 ssh -i "sonar.pem" ec2-user@<your-public-ip>
 
+
