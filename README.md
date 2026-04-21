@@ -1,28 +1,28 @@
-1️⃣ Launch EC2 Instance
+1️⃣ Launch EC2 Instance manually or using Terraform:
 Amazon Linux 2023
 Instance: t3.large
 Storage: 50–60 GB SSD
 Open Port: 9000
 
 
-2️⃣ Connect to EC2
+2️⃣ Connect/login to EC2:
 cd Downloads
 chmod 400 sonar.pem
 ssh -i "sonar.pem" ec2-user@<your-public-ip>
 
 
-3️⃣ Update Server
+3️⃣ Update Server/EC2 and install unzip, git:
 sudo dnf update -y
 sudo dnf install wget unzip git -y
 
 
-4️⃣ Install Java 17
+4️⃣ Install Java:
 sudo dnf install java-17-amazon-corretto -y
 java -version
 readlink -f $(which java)
 
 
-5️⃣ Install PostgreSQL
+5️⃣ Install PostgreSQL:
 sudo dnf install postgresql15 postgresql15-server -y
 sudo /usr/bin/postgresql-setup --initdb
 
@@ -31,7 +31,7 @@ sudo systemctl start postgresql
 sudo systemctl status postgresql
 
 
-6️⃣ Create SonarQube Database
+6️⃣ Create SonarQube Database:
 sudo -i -u postgres
 psql
 CREATE DATABASE sonarqube;
@@ -44,19 +44,19 @@ GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonar;
 exit
 
 
-7️⃣ Install SonarQube
+7️⃣ Install SonarQube:
 cd /opt
 sudo wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-9.9.4.87374.zip
 sudo unzip sonarqube-9.9.4.87374.zip
 sudo mv sonarqube-9.9.4.87374 sonarqube
 
 
-8️⃣ Create SonarQube User
+8️⃣ Create SonarQube User:
 sudo useradd sonar
 sudo chown -R sonar:sonar /opt/sonarqube
 
 
-9️⃣ Configure Database Connection
+9️⃣ Configure Database Connection:
 sudo nano /opt/sonarqube/conf/sonar.properties
 
 Add below:
@@ -66,7 +66,7 @@ sonar.jdbc.url=jdbc:postgresql://localhost/sonarqube
 
 save&exit.
 
-🔟 Configure Kernel Parameters
+🔟 Configure Kernel Parameters:
 sudo nano /etc/sysctl.conf
 
 Add below:
@@ -78,7 +78,7 @@ save&exit.
 sudo sysctl -p
 
 
-1️⃣1️⃣ Configure System Limits
+1️⃣1️⃣ Configure System Limits:
 sudo nano /etc/security/limits.conf
 
 Add below (before: '# End of file'):
@@ -88,7 +88,7 @@ sonar   -   nproc    8192
 save&exit.
 
 
-1️⃣2️⃣ Create SonarQube Service
+1️⃣2️⃣ Create SonarQube Service:
 sudo nano /etc/systemd/system/sonarqube.service
 
 Paste:
@@ -123,7 +123,7 @@ sudo systemctl start sonarqube
 sudo systemctl status sonarqube
 
 
-1️⃣3️⃣ Fix PostgreSQL Authentication
+1️⃣3️⃣ Fix PostgreSQL Authentication:
 sudo nano /var/lib/pgsql/data/pg_hba.conf
 
 Update below (remove  both old tables and add the below):
@@ -138,13 +138,13 @@ save+exit.
 sudo systemctl restart postgresql
 
 
-#1️⃣4️⃣ Verify Database Access
+#1️⃣4️⃣ Verify Database Access:
 #psql -U sonar -d sonarqube -h localhost
 #(write password: StrongPassword)
 #\q
 
 
-1️⃣5️⃣ Set Database Ownership
+1️⃣5️⃣ Set Database Ownership:
 sudo -i -u postgres
 psql
 
@@ -155,10 +155,10 @@ GRANT ALL PRIVILEGES ON DATABASE sonarqube TO sonar;
 \q
 
 
-1️⃣6️⃣ Access SonarQube
+1️⃣6️⃣ Access SonarQube:
 http://<your-public-ip>:9000
 
-1️⃣7️⃣ Default Login
+1️⃣7️⃣ Default Login:
 Field	Value
 Username	admin
 Password	admin
@@ -188,11 +188,11 @@ tail -f /opt/sonarqube/logs/sonar.log
 
 
 
+--------------------------------------------------------------------------------------------------------------------------------
 
 
 
-
-1️⃣8️⃣ Sonar Scanner Installation on your EC2-Instance
+1️⃣8️⃣ Sonar Scanner Installation on your EC2-Instance:
 
 cd /opt
 sudo wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006-linux.zip
@@ -210,11 +210,11 @@ save&exit.
 1. if EC2-instance/remote
 
 update below:
-sonar.host.url=http://<your-server-ip>:9000
+sonar.host.url=http://<your-ec2-public-ip>:9000
 
 save&exit.
 
-1️⃣9️⃣ Set Environment Variables
+1️⃣9️⃣ Set Environment Variables:
 
 sudo nano /etc/profile.d/sonar-scanner.sh
 
@@ -224,12 +224,12 @@ export PATH=$PATH:/opt/sonar-scanner/bin
 
 save+exit.
 
-2️⃣0️⃣ give permission
+2️⃣0️⃣ give permission:
 
 sudo chmod +x /etc/profile.d/sonar-scanner.sh
 
 
-2️⃣1️⃣ load env
+2️⃣1️⃣ load env:
 
 source /etc/profile.d/sonar-scanner.sh
 
